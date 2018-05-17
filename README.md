@@ -3,8 +3,8 @@ Wilson group summer workshop for Hartree-Fock
 
 ## Materials
 * Day01
-- Includes the Jupyter notebook
+  - Includes the Jupyter notebook
 * Day02
-- Python code, rhf-tutorial.py, requires installation of Psi4
+  - Python code, rhf-tutorial.py, requires installation of Psi4
 * Day03
-- Python code, uhf-tutorial.py 
+  - Python code, uhf-tutorial.py 
