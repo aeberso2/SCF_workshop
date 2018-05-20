@@ -55,23 +55,22 @@ bond_dist = 1.4632*bohr2ang
 cmpd = 'HeH'
 
 # here is how we define the geometry
-mol = psi4.geometry("""
-        He
-        H 1 {: .5f}
-        symmetry c1
-        """.format(bond_dist))
+mol = 
+
+
+
+
 
 # set charge to positive 1
-mol.set_molecular_charge(1)
+mol.
 
 the_basis = 'sto-3g'
 # set our calculation options
 
-psi4.set_options({'guess':'core',
-                  'basis':'{}'.format(the_basis),
-                  'scf_type':'pk',
-                  'e_convergence':1e-8,
-                  'reference': 'rhf'})
+psi4.set_options({
+
+    })
+
 
 # our guess is the core guess, -> can also be sad (superposition of atomic densities)
 # scf_type -> ERI algorithm, pk is default
@@ -79,23 +78,24 @@ psi4.set_options({'guess':'core',
 
 # compute static 1e- and 2e- quantities in Psi4
 # Class initialization
-wfn = psi4.core.Wavefunction.build(mol, psi4.core.get_global_option('basis'))
+
+wfn = 
 # mints is the integral helper
-mints = psi4.core.MintsHelper(wfn.basisset())
+mints = 
 
 # the Smat is the atomic orbital overlap
-Smat = asarray(mints.ao_overlap())
+Smat = 
 # number of basis functions, alpha orbitals -> rhf so just call alpha
-nbf = wfn.nso()
-ndocc = wfn.nalpha()
+nbf = 
+ndocc = 
 
 # Build core Hamiltonian
-Tmat = asarray(mints.ao_kinetic())
-Vmat = asarray(mints.ao_potential())
-Hmat = Tmat + Vmat
+Tmat = 
+Vmat = 
+Hmat = 
 
 # build the nasty two-electron repulsion integral
-Vee = asarray(mints.ao_eri())
+Vee = 
 
 # Construct AO orthogonalization matrix A
 # this is the Psi4 way, which is for symmetric orthog
@@ -104,14 +104,12 @@ Vee = asarray(mints.ao_eri())
 # A = asarray(A)
 
 # get nuclear repulsion energy from Psi4
-E_nuc = mol.nuclear_repulsion_energy()
-
+E_nuc = 
 
 # we'll keep our way in here, it works the same
 u, V = eigh(Smat)
 U = sqrt(inv(u*eye(len(u))))
 A = dot(V.T, dot(U, V))
-
 
 # maximum scf iterations
 maxiter = 40
@@ -139,9 +137,9 @@ print('==> Starting SCF Iterations <==\n')
 
 # comment in to write initial wavefunction
 # f = open('init_wfn.dat', 'w')
-# for i in range(C.shape[0]):
-#     for j in range(C.shape[1]):
-#         print('{: 23.15f}'.format(C[i,j]), file=f)
+# for i in 
+#     for j in 
+#             C[i,j]
 # f.close()
 
 for scf_iter in range(maxiter):
@@ -182,14 +180,16 @@ print('\nSCF Converged.')
 print('Final RHF Energy: {: .8f} [Eh]'.format(SCF_E))
 
 # print the final wavefunction
-f = open('final_wfn.dat', 'w')
-for i in range(C.shape[0]):
-    for j in range(C.shape[1]):
-        print('{: 23.15f}'.format(C[i,j]), file=f)
-f.close()
+# f = open('final_wfn.dat', 'w')
+# for i in range(C.shape[0]):
+#     for j in range(C.shape[1]):
+#         print('{: 23.15f}'.format(C[i,j]), file=f)
+# f.close()
 
 SCF_E_psi, wfn = psi4.energy('SCF', return_wfn=True)
+
 psi4.compare_values(SCF_E_psi, SCF_E, 6, 'SCF Energy')
+
 # remove any molden file with our compoudns name if it exists
 os.system('rm -f {}.rhf.molden'.format(cmpd))
 # create new molden file
