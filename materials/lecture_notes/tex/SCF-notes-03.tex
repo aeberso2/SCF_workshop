@@ -47,7 +47,7 @@
 \setcounter{section}{2}
 \section{Direct Inversion of the Iterative Subspace}
 
-When solving systems of linear (or nonlinear) equations, iterative methods are often employed.  Unfortunately, such methods often suffer from convergence issues such as numerical instability, slow convergence, and significant computational expense when applied to difficult problems.  In these cases, convergence acceleration methods may be applied to both speed up, stabilize and/or reduce the cost for the convergence patterns of these methods, so that solving such problems become computationally tractable.  One such method is known as the direct inversion of the iterative subspace (DIIS) method, which is commonly applied to address convergence issues within self consistent field computations in Hartree-Fock theory (and other iterative electronic structure methods).  In this tutorial, we'll introduce the theory of DIIS for a general iterative procedure, before integrating DIIS into our previous implementation of RHF.
+When solving systems of linear (or nonlinear) equations, iterative methods are often employed. Unfortunately, such methods often suffer from convergence issues such as numerical instability, slow convergence, and significant computational expense when applied to difficult problems. In these cases, we can apply convergence acceleration methods to both speed up, stabilize and/or reduce the cost for the convergence patterns of these methods, so that solving such problems become computationally tractable.  One such method is known as the direct inversion of the iterative subspace (DIIS) method, which is commonly applied to address convergence issues within self consistent field computations in Hartree-Fock theory (and other iterative electronic structure methods).  In this tutorial, we'll introduce the theory of DIIS for a general iterative procedure, before integrating DIIS into our previous implementation of RHF.
 
 \subsection{Theory}
 
@@ -101,7 +101,6 @@ c_n\\
 \end{pmatrix}
 \end{equation}
 which is referred to as the Pulay equation, named after the inventor of DIIS.  It is worth noting that at this point our trial vectors, residual vectors, and solution vector may in fact be tensors of arbitrary rank. For this reason that we have used the generic notation of Dirac in the above discussion to denote the inner product between such objects.
-
 \subsection{Algorithms for DIIS}
 The general DIIS procedure, as described above, has the following structure during each iteration:
 \subsubsection{A Generic DIIS procedure}
@@ -161,7 +160,7 @@ Here is the briefest of overviews for the unrestricted form of the SCF equations
 \mathbf{F}^{\alpha}\mathbf{C}^{\alpha} &= \mathbf{SC}^{\alpha}{\bm{\upvarepsilon}}^{\alpha} \\
 \mathbf{F}^{\beta}\mathbf{C}^{\beta} &= \mathbf{SC}^{\beta}{\bm{\upvarepsilon}}^{\,\beta}
 \end{align}
-which are the unrestricted generalizations of the restricted Roothan equations, called the Pople-Nesbitt equations. Here, the one-electron Fock matrices are given by
+which are the unrestricted generalizations of the restricted Roothaan equations, called the Pople-Nesbitt equations. Here, the one-electron Fock matrices are given by
 \begin{align}
 F_{\mu\nu}^{\alpha} &= H_{\mu\nu} + (\mu\nu|\lambda\sigma)\,[P_{\lambda\sigma}^{\alpha} + P_{\lambda\sigma}^{\beta}] - \cip{\mu\lambda}{\nu\sigma} P_{\lambda\sigma}^{\beta}\\
 F_{\mu\nu}^{\beta} &= H_{\mu\nu} + \cip{\mu\nu}{\lambda\sigma}[P_{\lambda\sigma}^{\alpha} + P_{\lambda\sigma}^{\beta}] - \cip{\mu\lambda}{\nu\sigma}P_{\lambda\sigma}^{\alpha}

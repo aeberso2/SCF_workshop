@@ -477,7 +477,7 @@ then using \eqref{eq:frmoset}, we get
 \begin{equation}\label{eq:svnate}
 \bf F' C' = C' \bm{\upvarepsilon}
 \end{equation}
-These happen to be the transformed Roothaan equations, which we can solve for $ \textbf{C}' $ by diagonalizing $ \bf F' $, using equations \eqref{eq:svnsvn}, \eqref{eq:svnate}, and \eqref{eq:svnfor} to solve the Roothaan equations $ \bf FC = SC\ve  $ for $\bf C $ and $ \ve  $. The intermediate primed matrices are just the Fock matrix and expansion coefficients in the orthogonalized basis, i.e.
+These happen to be the transformed Roothaan equations, which we can solve for $ \textbf{C}' $ by diagonalizing $ \bf F' $, using equations \eqref{eq:svnsvn}, \eqref{eq:svnate}, and \eqref{eq:svnfor} to solve the Roothaan equations $ \bf FC = SC {\bm{\upvarepsilon}}  $ for $\bf C $ and $ {\bm{\upvarepsilon}}$. The intermediate primed matrices are just the Fock matrix and expansion coefficients in the orthogonalized basis, i.e.
 \begin{equation}\label{eq:svnin}
 \psi_i = \sum_{\mu=1}^K C_{\mu i}' \phi_\mu' \qquad i = 1, 2, \dots, K
 \end{equation}
@@ -527,7 +527,7 @@ Here are the steps in a list format
 	\item Calculate the transformed Fock matrix $ \bf F' = X^\t F X $
 	\item Diagonalize $ \bf F'$ to get $ \bf C' $ and $ \ve $. 
 	\item Calculate $ \bf C = XC'  $. 
-	\item Form a new density matrix $ \bf P $ from \textbf{C} using Eq. .
+	\item Form a new density matrix $ \bf P $ from \textbf{C} using Eq. \eqref{eq:densmat} .
 	\item  See if the procedure converged, by determining if the new density matrix of step (10) has changed very little, (within a specified criterion). If no convergence, go back to step (5) with the new density matrix
 	\item If the procedure converges, then we can use the resulting solution, represented by $ \mathbf{C}, \mathbf{P}, \mathbf{F}$, etc, to calculate expectation values and other such quantities. 
 \end{enumerate}
