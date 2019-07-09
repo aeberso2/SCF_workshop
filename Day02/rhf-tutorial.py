@@ -51,18 +51,29 @@ def formG(P):
 psi4.core.set_output_file('output.dat', False)
 
 bond_dist = 1.4632*bohr2ang
+# bond_dist = 1.4632
+# bond_dist = 3.015
 
-cmpd = 'HeH'
+# cmpd = 'LiH'
+cmpd = 'HeH+'
 
 # here is how we define the geometry
+# mol = psi4.geometry("""
+#         Li
+#         H 1 {: .5f}
+#         symmetry c1
+#         """.format(bond_dist))
 mol = psi4.geometry("""
-        He
-        H 1 {: .5f}
+        0 2
+        He 0.0 0.0 0.0
+        H  0.0 0.0 {: .5f}
         symmetry c1
         """.format(bond_dist))
 
 # set charge to positive 1
+# mol.set_molecular_charge(0)
 mol.set_molecular_charge(1)
+mol.set_multiplicity(1)
 
 the_basis = 'sto-3g'
 # set our calculation options
@@ -110,8 +121,8 @@ E_nuc = mol.nuclear_repulsion_energy()
 # we'll keep our way in here, it works the same
 u, V = eigh(Smat)
 U = sqrt(inv(u*eye(len(u))))
-A = dot(V.T, dot(U, V))
-
+# A = dot(V.T, dot(U, V))
+A = dot(V, dot(U, V.T))
 
 # maximum scf iterations
 maxiter = 40

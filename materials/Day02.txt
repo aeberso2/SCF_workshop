@@ -1,6 +1,0 @@
-Hi!
-
-Today we will do some stuff with Psi4 and scf
-utilizing Psi4 we will generate the integrals
-first we'll check our results with the
-sto-3g basis then we'll do some larger systems!!!!

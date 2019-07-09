@@ -1,6 +1,6 @@
 import psi4
 from numpy import *
-import pandas as pd
+# import pandas as pd
 import os, sys
 from scipy.constants import physical_constants
 from scipy.linalg import eigh, inv
@@ -52,50 +52,57 @@ psi4.core.set_output_file('output.dat', False)
 
 bond_dist = 1.4632*bohr2ang
 
-cmpd = 'HeH'
+cmpd = 'HeH+'
 
 # here is how we define the geometry
-mol = 
-
-
-
-
+mol = psi4.geometry('''
+        He
+        H 1 {: .5f}
+        symmetry c1
+        '''.format(bond_dist))
 
 # set charge to positive 1
-mol.
+mol.set_molecular_charge(1)
+mol.set_multiplicity(1)
 
 the_basis = 'sto-3g'
+# the_basis = 'cc-pvtz'
+
 # set our calculation options
-
-psi4.set_options({
-
-    })
-
-
 # our guess is the core guess, -> can also be sad (superposition of atomic densities)
 # scf_type -> ERI algorithm, pk is default
 # reference -> rhf, uhf, and maybe rohf
+psi4.set_options(
+            {
+            'guess':'core',
+            'basis':'{}'.format(the_basis),
+            'scf_type':'pk',
+            'e_convergence':1e-8,
+            'reference':'rhf',
+            }
+        )
+
 
 # compute static 1e- and 2e- quantities in Psi4
 # Class initialization
+wfn = psi4.core.Wavefunction.build(mol, psi4.core.get_global_option('basis'))
 
-wfn = 
 # mints is the integral helper
-mints = 
-
+mints = psi4.core.MintsHelper(wfn.basisset())
 # the Smat is the atomic orbital overlap
-Smat = 
+Smat = asarray(mints.ao_overlap())
 # number of basis functions, alpha orbitals -> rhf so just call alpha
-nbf = 
-ndocc = 
+# nbf = Smat.shape[0]
+nbf = wfn.nso()
+ndocc = wfn.nalpha()
 
 # Build core Hamiltonian
-Tmat = 
-Vmat = 
-Hmat = 
+Tmat = asarray(mints.ao_kinetic())
+Vmat = asarray(mints.ao_potential())
+Hmat = Tmat + Vmat
 
 # build the nasty two-electron repulsion integral
-Vee = 
+Vee = asarray(mints.ao_eri())
 
 # Construct AO orthogonalization matrix A
 # this is the Psi4 way, which is for symmetric orthog
@@ -104,24 +111,29 @@ Vee =
 # A = asarray(A)
 
 # get nuclear repulsion energy from Psi4
-E_nuc = 
+E_nuc = mol.nuclear_repulsion_energy()
 
+# symmetric orthogonalization, note: had error in the past, make sure correct matrix is transposed
 # we'll keep our way in here, it works the same
 u, V = eigh(Smat)
 U = sqrt(inv(u*eye(len(u))))
-A = dot(V.T, dot(U, V))
+A = dot(V, dot(U, V.T))
+
+# canonical
+# u, V = eigh(Smat)
+# u = 1/sqrt(u)
+# X = u*V
 
 # maximum scf iterations
 maxiter = 40
-
 # energy convergence criterion
 E_conv = 1.0e-6
 D_conv = 1.0e-4
-
 # pre-iteration step
 # scf & previous energy
 SCF_E = 0.0
 E_old = 0.0
+
 # form core guess
 C, P, epsilon = diag_F(Hmat, ndocc)
 
@@ -136,11 +148,12 @@ print('Number of basis functions {}'.format(nbf))
 print('==> Starting SCF Iterations <==\n')
 
 # comment in to write initial wavefunction
-# f = open('init_wfn.dat', 'w')
-# for i in 
-#     for j in 
-#             C[i,j]
-# f.close()
+f = open('init_wfn.dat', 'w')
+for i in range(C.shape[0]):
+    for j in range(C.shape[1]):
+        print('{: 23.15f}'.format(C[i,j], file=f))
+
+f.close()
 
 for scf_iter in range(maxiter):
     # Build the Fock matrix
@@ -148,23 +161,22 @@ for scf_iter in range(maxiter):
     # the einsum function
     F = Hmat + formG(P)
 
-    # for the diis
+    # for the diis - ignore if we didn't cover it
     # A * (F*P*S - S*P*F) * A
     M = dot(F, dot(P, Smat)) - dot(Smat, dot(P, F))
-    diis_r = dot(A, dot(M, A))
-
+    diis_r = dot(A.T, dot(M, A))
     F_list.append(F)
     R_list.append(diis_r)
+    dRMS = mean(diis_r**2)**0.5
 
     SCF_E = sum((Hmat + F)*P) + E_nuc
-
     dE = SCF_E - E_old
 
-    dRMS = mean(diis_r**2)**0.5
     print('SCF Iteration {:3d}: Energy = {: 4.16f} dE = {: 1.5e} dRMS = {:1.5e}'.format(scf_iter+1, SCF_E, dE, dRMS))
 
     if (abs(dE) < E_conv) and (dRMS < D_conv):
         break
+
     E_old = SCF_E
 
     if scf_iter >= 2:
@@ -180,11 +192,11 @@ print('\nSCF Converged.')
 print('Final RHF Energy: {: .8f} [Eh]'.format(SCF_E))
 
 # print the final wavefunction
-# f = open('final_wfn.dat', 'w')
-# for i in range(C.shape[0]):
-#     for j in range(C.shape[1]):
-#         print('{: 23.15f}'.format(C[i,j]), file=f)
-# f.close()
+f = open('final_wfn.dat', 'w')
+for i in range(C.shape[0]):
+    for j in range(C.shape[1]):
+        print('{: 23.15f}'.format(C[i,j]), file=f)
+f.close()
 
 SCF_E_psi, wfn = psi4.energy('SCF', return_wfn=True)
 

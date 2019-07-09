@@ -1,10 +1,9 @@
 import psi4
 from numpy import *
-import pandas as pd
+# import pandas as pd
 import os, sys
 from numpy.linalg import eigh, inv
 from scipy.constants import physical_constants
-from scipy.linalg import eigh, inv
 
 bohr2ang = physical_constants['Bohr radius'][0]*1e10
 
@@ -42,6 +41,7 @@ def diis_xtrap(F_list, diis_resid):
 psi4.core.set_output_file('output.dat', False)
 
 bond_dist = 1.4632*bohr2ang
+# bond_dist = 1.8632*bohr2ang
 
 cmpd = 'HeH'
 
@@ -53,12 +53,14 @@ mol = psi4.geometry("""
         """.format(bond_dist))
 
 psi4.set_options({'guess':'core',
+#                   'guess':'sad',
                   'basis':'sto-3g',
                   'scf_type':'pk',
                   'e_convergence':1e-8,
                   'reference': 'uhf'})
-
+# mol.set_multiplicity(3)
 mol.set_molecular_charge(1)
+mol.set_multiplicity(1)
 
 maxiter = 40
 # energy convergence criterion
@@ -121,6 +123,19 @@ print('==> Starting SCF Iterations <==\n')
 
 
 # everything will be in twos
+f = open('wave_init.dat', 'w')
+narg = Hmat.shape[0]
+print('Alpha Coefficients', file=f)
+for i in range(narg):
+    for j in range(narg):
+        print('{: 15.10f}'.format(Ca[i,j]), file=f)
+
+print('Beta Coefficients', file=f)
+for i in range(narg):
+    for j in range(narg):
+        print('{: 15.10f}'.format(Cb[i,j]), file=f)
+f.close()
+
 for scf_iter in range(maxiter):
 
     # Build Fa and Fb matrices
@@ -175,5 +190,7 @@ print('Final UHF Energy: {: .8f} [Eh]'.format(SCF_E))
 SCF_E_psi, wfn = psi4.energy('SCF', return_wfn=True)
 psi4.compare_values(SCF_E_psi, SCF_E, 6, 'SCF Energy')
 # create molden file
-# os.system('rm -f {}.uhf.molden'.format(cmpd))
-# psi4.molden(wfn, '{}.uhf.molden'.format(cmpd))
+os.system('rm -f {}.uhf.molden'.format(cmpd))
+psi4.molden(wfn, '{}.uhf.molden'.format(cmpd))
+psi4.fchk(wfn, 'heh+.fchk')
+
